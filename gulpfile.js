@@ -10,7 +10,8 @@ var gulp = require('gulp'),
     webserver = require('gulp-webserver'), //本地服务器
     autoprefixer = require('gulp-autoprefixer'),
     minifyCss = require('gulp-minify-css'), // CSS压缩
-    sourcemaps = require('gulp-sourcemaps');
+    sourcemaps = require('gulp-sourcemaps'),
+    concat = require('gulp-concat');
 
 gulp.task('html', function () {
     return gulp.src('src/**/*.html') // 指明源文件路径、并进行文件匹配
@@ -56,7 +57,19 @@ gulp.task('webserver', function () {
             open: true // 服务器启动时自动打开网页
         }));
 });
-
+//合并js文件
+gulp.task('concat', function () {
+    gulp.src([
+        './src/js/depend/jquery-1.11.3.js',
+        './src/js/depend/tooltip.js',
+        './src/js/components/*.js'
+    ])
+        .pipe(sourcemaps.init())
+        .pipe(concat('vendor.js'))
+        .pipe(uglify()) // 使用uglify进行压缩，并保留部分注释
+        .pipe(sourcemaps.write())
+        .pipe(gulp.dest('./dist/js'));
+});
 // 监听任务
 gulp.task('watch', function () {
     // 监听 html
